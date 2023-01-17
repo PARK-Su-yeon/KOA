@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = "my-secret-key";
+const{register}=require('./query')
 
 /** 해당 id의 회원정보들 */
 exports.info = (ctx, next) => {
@@ -9,10 +9,17 @@ exports.info = (ctx, next) => {
 
 exports.register = async (ctx, next) => {
   //회원가입 처리 모듈
+  let {email,password,name}=ctx.request.body;
+  let {affectedRows}=await register(email, password,name);
+  if(affectedRows>0){
+    let token= await generteToken ({name});
+    ctx.body= token;
+  }
+  else{
+    ctx.body={result:"fail"};
+  }
+  }
 
-  let token = await generteToken({ name: "my-name" });
-  ctx.body = token;
-};
 exports.login = async (ctx, next) => {
   //로그인 모듈
   let { id, pw } = ctx.request.body;
